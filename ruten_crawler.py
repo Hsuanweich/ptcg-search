@@ -88,7 +88,7 @@ def ruten_crawler_main():
             # 去除掉缺貨所以把價格設的很高的商品
             product_num = len(products_price)
             if product_num == 1:  # 只有一個樣本，使用固定門檻法
-                if products_price[0] >= 1000:
+                if products_price[0] >= 10000:
                     filtered_products_price = []
                 else:
                     filtered_products_price = products_price
@@ -106,17 +106,21 @@ def ruten_crawler_main():
                 q1 = np.percentile(filtered_products_price, 25)
                 median = np.percentile(filtered_products_price, 50)
                 q3 = np.percentile(filtered_products_price, 75)
+                highest = max(filtered_products_price)
+                lowest = min(filtered_products_price)
             else:
                 q1 = 0
                 median = 0
                 q3 = 0
+                highest = 0
+                lowest = 0
 
             # 將資料更新至product_week
             connection.ping(reconnect=True)
             with connection.cursor() as cursor:
-                cursor.execute("UPDATE `product_week` SET `q1` = %s, `median` = %s, `q3` = %s"
+                cursor.execute("UPDATE `product_week` SET `q1` = %s, `median` = %s, `q3` = %s, `highest` = %s, `lowest` = %s"
                                " WHERE `price_date` = %s AND `search_key` = %s AND `from_where` = %s;",
-                               (q1, median, q3, date_now, search_key, from_where))
+                               (q1, median, q3, highest, lowest, date_now, search_key, from_where))
 
             # 對每個商品價格做計數
             for price in filtered_products_price:
@@ -338,7 +342,7 @@ def crawler(search_key, from_where, driver, connection):
                     if len(product.find_elements(By.CLASS_NAME, "rt-product-card-ad-tag")) == 0:  # 否
                         title = product.find_element(By.CLASS_NAME, "rt-product-card-name")
                         # 過濾器
-                        if productfilter(title.text, keyword, connection):
+                        if productfilter(title.text, search_key, connection):
                             # 判斷此商品價格類型
                             if len(product.find_elements(By.CLASS_NAME, "text-price-dash")) == 0:  # 單一價格
                                 price = product.find_element(By.CLASS_NAME, "text-price-dollar")
@@ -417,17 +421,17 @@ def clearcache(driver):
 
 
 # 過濾商品
-def productfilter(text, keyword, connection):
+def productfilter(text, search_key, connection):
     connection.ping(reconnect=True)  # 確保資料庫連線正常
     # 用來操作資料庫的游標
     with connection.cursor() as cursor:
-        cursor.execute(f"SELECT * FROM `card` WHERE `search_key` = '{keyword} 球閃';")
+        cursor.execute(f"SELECT * FROM `card` WHERE `search_key` = '{search_key} 球閃';")
         has_ball_shine_ver = cursor.fetchone()
     if has_ball_shine_ver:
         if "球閃" in text:
             return False
 
-    name = keyword.split(" ", 1)[-1]  # name = keyword去除編號
+    name = search_key.split(" ", 1)[-1]  # name = search_key去除編號
     if "ex" not in name and "ex" in text:  # 在非ex寶可夢的搜尋結果中過濾掉ex寶可夢
         return False
 
@@ -547,4 +551,4 @@ def contains_fullwidth_letters(s):
     return any(0xFF21 <= ord(c) <= 0xFF3A or 0xFF41 <= ord(c) <= 0xFF5A for c in s)
 
 
-ruten_crawler_main()
+# ruten_crawler_main()

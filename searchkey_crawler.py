@@ -8,11 +8,11 @@ from selenium.common.exceptions import TimeoutException
 import time
 import mysql.connector
 import requests
-import io
 
 
 # 主程式
 def searchkey_crawler_main():
+    print("開始訓練家爬蟲...")
     # 建立與資料庫的連線
     connection = mysql.connector.connect(host="127.0.0.1",
                                          port="3306",
@@ -78,6 +78,7 @@ def searchkey_crawler_main():
 
     # 關閉與資料庫的連線
     connection.close()
+    print("訓練家爬蟲完成，資料已更新至資料庫。")
 
 
 def namefilter(name):
@@ -230,7 +231,7 @@ def crawler(last_page, driver, connection):
                             already_in_database = cursor.fetchone()
                         # 有重複資料，代表以前爬過了
                         if already_in_database:
-                            print("爬過了")
+                            print(f"{name} 已經在資料庫中了")
                             # 關閉分頁
                             driver.close()
                             driver.switch_to.window(driver.window_handles[0])
@@ -267,12 +268,11 @@ def crawler(last_page, driver, connection):
                         image_file_name = f"{search_key_id}+{from_where_id}-ball.jpg"
                     else:
                         image_file_name = f"{search_key_id}+{from_where_id}.jpg"
-                    with open(f"official_card_image/{image_file_name}", "wb") as file:
+                    with open(f"/home/ptcg/PTCGHTML/official_card_image/{image_file_name}", "wb") as file:
                         file.write(response.content)
 
                     card_info = {
                         'search_key': name,  # 搜尋用關鍵字：<編號> <卡名>
-                        # 'image': card_image,  # 卡圖
                         'from_where': card_from_where  # 卡片出處
                     }
 
