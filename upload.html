@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>上傳檔案與資料夾</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Kanit', sans-serif;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* 背景影片 */
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    /* 半透明背景容器 */
+    .container {
+      position: relative;
+      max-width: 600px;
+      margin: 80px auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    input[type="file"] {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      width: 100%;
+      text-align: center;
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: #da19b7;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    form button[type="submit"]:hover {
+      background-color: #c113a5;
+    }
+
+    #confirmBtn:hover {
+      background-color: #bf108c;
+    }
+
+    .btn-link:hover {
+      background-color: #b3007d;
+      color: #fff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-link {
+      background-color: #da19b7;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #result {
+      margin-top: 30px;
+    }
+
+    #result ul {
+      padding-left: 20px;
+    }
+
+    #result li {
+      margin-bottom: 10px;
+      color: #444;
+    }
+
+    a {
+      text-decoration: none;
+      color: #da19b7;
+      display: inline-block;
+      margin-top: 30px;
+      text-align: center;
+      width: 100%;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .bg-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('img/htmlbackground.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      padding-top: 60px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: auto;
+      position: relative;
+      text-align: center;
+    }
+
+    .close {
+      color: white;
+      position: absolute;
+      right: 20px;
+      top: 10px;
+      font-size: 36px;
+      font-weight: bold;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .close:hover {
+      background: red;
+      color: white;
+    }
+
+    .close:focus {
+      color: black;
+    }
+
+    .center-button {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+  <!--讓其他不要覆蓋到標楷體-->
+  <style>
+    .container, 
+    .container * {
+      font-family: "DFKai-SB", "標楷體", DFKai, serif !important;
+    }
+    .btn-link {
+      font-family: "DFKai-SB", "標楷體", DFKai, serif !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-image"></div>
+
+  <div class="container">
+    <h1>檔案與資料夾上傳</h1>
+    <h2>上傳檔案後按前往圖表頁面</h2>
+    <form id="fileForm">
+      <input type="file" name="files" accept=".jpg, .jpeg, .png">
+      <button type="submit">上傳檔案</button>
+      <button id="confirmBtn" type="button" style="display: none;">前往圖表頁面</button>
+    </form>
+
+    <div id="result"></div>
+    <a href="/" class="btn-link">← 回首頁</a>
+  </div>
+
+  <script>
+    document.getElementById('fileForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const fileInput = document.querySelector('input[type="file"]');
+      const files = fileInput.files;
+
+      if (files.length === 0) {
+        alert('請先選擇檔案後再上傳！');
+        return;
+      }
+
+      const file = files[0];
+      const formData = new FormData();
+      formData.append('files', file);
+
+      fetch('/upload_files', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => response.json())
+        .then(data => {
+          showResult('📂檔案上傳完成：', data['📂files成功上傳']);
+          if (Array.isArray(data['📂files成功上傳']) && data['📂files成功上傳'].length > 0) {
+            document.getElementById('confirmBtn').style.display = 'block';
+          }
+          else {
+            alert('雖然傳送成功，但沒有任何有效圖片！');
+          }
+        })
+        .catch(error => {
+          alert('上傳失敗：' + error);
+        });
+    });
+
+    function showResult(title, fileList) {
+      const result = document.getElementById('result');
+      if (!Array.isArray(fileList)) {
+        result.innerHTML = `<h3>${title}</h3><p style="color:red;"> 檔案清單取得失敗！</p>`;
+        console.error('fileList 不是陣列：', fileList);
+        return;
+      }
+      result.innerHTML = `<h3>${title}</h3>` +
+        fileList.map(f =>
+          `<img src="/uploads/${f}" alt="${f}" 
+                style="max-width: 300px; display: block; margin: 10px auto;">`
+        ).join('');
+    }
+
+    // 按下確認按鈕後跳轉
+    document.getElementById('confirmBtn').addEventListener('click', function () {
+      window.location.href = '/display';
+    });
+  </script>
+</body>
+</html>
