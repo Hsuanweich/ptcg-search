@@ -1,0 +1,4 @@
+{
+// 啟用 Python IntelliSense（使用 Pylance）
+"python.languageServer": "Pylance",  
+}

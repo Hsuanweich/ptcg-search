@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>卡片瀏覽器</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@^2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <style>
+      body { background: #f6f6f6; font-family: "Noto Sans TC", "微軟正黑體", Arial, sans-serif; }
+      .card-list { display: flex; flex-wrap: wrap; gap: 28px; margin: 40px 0; justify-content: center; }
+      .card-btn { border: 1px solid #ddd; border-radius: 10px; padding: 18px 10px 12px 10px; text-align: center; background: #fff; width: 190px; cursor: pointer; transition: box-shadow 0.2s; }
+      .card-btn:hover { box-shadow: 0 0 8px #bbb; background: #f2f6fa; }
+      .card-btn img { width: 120px; height: auto; display: block; margin: 0 auto 12px auto; border-radius: 6px; }
+      .back-btn { margin: 20px 0 10px 20px; padding: 8px 20px; border-radius: 7px; border: 1px solid #aaa; cursor: pointer; background: #fff; font-size: 15px; }
+      .info-block { max-width: 540px; margin: 32px auto 10px auto; }
+      .price { font-size: 22px; color: #c00; font-weight: bold; margin-bottom: 14px; }
+      .section-title { margin: 16px 0 8px 0; font-weight: bold; letter-spacing: 2px; font-size: 18px; color: #444; }
+      canvas { margin: 14px 0; max-width: 520px; }
+      .tab-btn {
+        padding: 6px 18px;
+        border: 1px solid #bbb;
+        border-radius: 8px 8px 0 0;
+        background: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        outline: none;
+        transition: background 0.2s;
+        font-size: 16px;
+      }
+      .tab-btn.active, .tab-btn:active { background: #e6ecfa; }
+      .tab-btn:hover { background: #f7f7f7; }
+      .tab-content {
+        background: #fff;
+        border: 1px solid #bbb;
+        border-radius: 0 0 14px 14px;
+        padding: 16px 0 12px 0;
+        margin-bottom: 22px;
+        min-height: 350px;
+      }
+      .date-controls {
+        margin-bottom: 12px;
+        text-align: center;
+      }
+      .reset-btn {
+        margin-left: 18px;
+        padding: 4px 12px;
+        border-radius: 5px;
+        border: 1px solid #bbb;
+        background: #f7f7f7;
+        cursor: pointer;
+      }
+      @media (max-width: 800px) {
+        .card-list { flex-direction: column; align-items: center; }
+        .info-block { max-width: 99vw; }
+      }
+    </style>
+</head>
+<body>
+    <div id="main-page">
+        <button class="back-btn" onclick="goBack()">返回上一頁</button>
+        <div class="card-list" id="card-list"></div>
+    </div>
+    <div id="detail-page" style="display:none;">
+        <button class="back-btn" onclick="showMain()">返回上一頁</button>
+        <div class="info-block" id="detail-info"></div>
+    </div>
+
+<script>
+let allData = [];
+let charts = [];
+let originalLineData = null; // 保存初始的折線圖資料
+
+// ===== 取得後端資料 =====
+fetch('/run-script-4', { method: 'POST' })
+  .then(res => res.json())
+  .then(data => {
+    allData = data;
+    renderCardList();
+  });
+
+// ===== 主頁顯示所有卡片 =====
+function renderCardList() {
+  const listDiv = document.getElementById('card-list');
+  listDiv.innerHTML = '';
+  allData.forEach((card, idx) => {
+    const btn = document.createElement('div');
+    btn.className = 'card-btn';
+    btn.onclick = () => showDetail(idx);
+
+    const img = document.createElement('img');
+    img.src = card.card_image;
+    const name = document.createElement('div');
+    name.textContent = card.card_fullname;
+    btn.appendChild(img);
+    btn.appendChild(name);
+
+    listDiv.appendChild(btn);
+  });
+}
+
+// ===== 詳細頁（分頁式）=====
+function showDetail(idx) {
+  document.getElementById('main-page').style.display = 'none';
+  document.getElementById('detail-page').style.display = '';
+  renderDetail(idx);
+}
+
+function showMain() {
+  document.getElementById('main-page').style.display = '';
+  document.getElementById('detail-page').style.display = 'none';
+  charts.forEach(c => c.destroy());
+  charts = [];
+}
+
+function goBack() {
+  if (window.history.length > 1) window.history.back();
+  else alert("沒有上一頁可返回");
+}
+
+function renderDetail(idx) {
+  const card = allData[idx];
+  const detailDiv = document.getElementById('detail-info');
+  detailDiv.innerHTML = `
+    <div style="text-align:center;">
+      <img src="${card.card_image}" style="width:180px; margin-bottom:14px; border-radius:12px;">
+      <div class="section-title">${card.card_fullname}</div>
+      <div class="price">建議售價：${card.recommended_price} 元</div>
+    </div>
+    <!-- tab 切換鈕 -->
+    <div style="display:flex; gap:8px; justify-content:center; margin: 24px 0 0 0;">
+      <button class="tab-btn active" id="tab-btn-0" onclick="showTab(0)">目前價格分布</button>
+      <button class="tab-btn" id="tab-btn-1" onclick="showTab(1)">歷史價格分布</button>
+      <button class="tab-btn" id="tab-btn-2" onclick="showTab(2)">歷史價格走勢</button>
+    </div>
+    <!-- 三個分頁內容 -->
+    <div id="tab-content-0" class="tab-content" style="display:block;"><canvas id="bar1"></canvas></div>
+    <div id="tab-content-1" class="tab-content" style="display:none;"><canvas id="bar2"></canvas></div>
+    <div id="tab-content-2" class="tab-content" style="display:none;">
+      <div class="date-controls">
+        選擇日期區間：
+        <input type="date" id="start-date" style="margin-right:10px;">
+        <input type="date" id="end-date">
+        <button class="reset-btn" onclick="resetLineChart()">重置</button>
+        <span style="font-size:13px;color:#777;margin-left:10px;">可用滑鼠縮放/拖曳圖表</span>
+      </div>
+      <canvas id="line1"></canvas>
+    </div>
+  `;
+
+  // 銷毀舊圖表
+  charts.forEach(c => c.destroy());
+  charts = [];
+
+  // 初始化兩個長條圖
+  charts.push(
+    new Chart(document.getElementById('bar1').getContext('2d'), {
+      type: 'bar',
+      data: card.product_bar,
+      options: { responsive: true }
+    })
+  );
+  charts.push(
+    new Chart(document.getElementById('bar2').getContext('2d'), {
+      type: 'bar',
+      data: card.product_history_bar,
+      options: { responsive: true }
+    })
+  );
+
+  let labels = card.product_week_line.labels;
+  labels = labels.map(lab => {
+    const d = new Date(lab);
+    if (!isNaN(d.getTime())) return d.toISOString().slice(0,10);
+    return lab;
+  });
+  card.product_week_line.labels = labels;
+
+  // ===== 初始化折線圖與備份原始資料 =====
+  originalLineData = JSON.parse(JSON.stringify(card.product_week_line));
+  charts.push(
+    new Chart(document.getElementById('line1').getContext('2d'), {
+      type: 'line',
+      data: JSON.parse(JSON.stringify(card.product_week_line)),
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true },
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'x'
+            },
+            zoom: {
+              wheel: { enabled: true },
+              pinch: { enabled: true },
+              mode: 'x'
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: 'day'
+            },
+            title: { display: true, text: "日期" }
+          },
+          y: { title: { display: true, text: "價格" } }
+        }
+      }
+    })
+  );
+
+  // 預設顯示第一個tab
+  showTab(0);
+
+  // 日期欄位監聽
+  setTimeout(() => {
+    document.getElementById('start-date').addEventListener('change', updateLineChart);
+    document.getElementById('end-date').addEventListener('change', updateLineChart);
+  }, 0);
+}
+
+// ===== tab切換控制 =====
+function showTab(n) {
+  for(let i=0; i<3; ++i) {
+    document.getElementById('tab-content-' + i).style.display = (i === n) ? "block" : "none";
+    document.getElementById('tab-btn-' + i).classList.toggle('active', i === n);
+  }
+}
+
+// ===== 日期區間過濾折線圖 =====
+function updateLineChart() {
+  const chart = charts[2];
+  if (!originalLineData || !chart) return;
+  const startDate = document.getElementById('start-date').value;
+  const endDate = document.getElementById('end-date').value;
+  // 依據日期篩選 labels
+  const labels = originalLineData.labels;
+  let sIdx = 0, eIdx = labels.length - 1;
+  if(startDate) sIdx = labels.findIndex(lab => lab >= startDate);
+  if(endDate) {
+    eIdx = labels.findIndex(lab => lab > endDate);
+    if(eIdx === -1) eIdx = labels.length-1;
+    else eIdx -= 1;
+  }
+  if(sIdx < 0) sIdx = 0;
+  if(eIdx < sIdx) eIdx = sIdx;
+
+  const newLabels = labels.slice(sIdx, eIdx+1);
+  const newDatasets = originalLineData.datasets.map(ds => ({
+    ...ds,
+    data: ds.data.slice(sIdx, eIdx+1)
+  }));
+
+  chart.data.labels = newLabels;
+  chart.data.datasets = newDatasets;
+  chart.update();
+}
+
+// ===== 折線圖重置（日期/縮放） =====
+function resetLineChart() {
+  const chart = charts[2];
+  if (!originalLineData || !chart) return;
+  // 恢復所有資料
+  chart.data.labels = [...originalLineData.labels];
+  chart.data.datasets = originalLineData.datasets.map(ds => ({
+    ...ds,
+    data: [...ds.data]
+  }));
+  // 清空日期 input
+  document.getElementById('start-date').value = '';
+  document.getElementById('end-date').value = '';
+  // 重置縮放
+  if (chart.resetZoom) chart.resetZoom();
+  chart.update();
+}
+</script>
+</body>
+</html>

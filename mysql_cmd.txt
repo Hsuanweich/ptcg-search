@@ -1,0 +1,3 @@
+sudo docker ps
+sudo docker start my_mysql
+sudo docker exec -it my_mysql mysql -u root -p

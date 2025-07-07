@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>PTCG卡牌搜尋</title>
+    <!-- CSS美化 -->
+    <!-- 表格美化 -->
+    <style>
+        table, tr, th, td{
+            border: 1px solid black;
+        }
+    </style>
+
+    <!-- 搜尋 -->
+    <!-- meta標籤介紹 -->
+    <meta name="description" content="分析並搜尋寶可夢卡牌價格">
+
+    <!-- SEO -->
+    <meta name="keywords" content="PTCG, 搜尋, 價格">
+    <meta property="og:url"             content="https://asia.pokemon-card.com/tw/card-search/detail/10231/" />
+    <meta property="og:type"            content="article" />
+    <meta property="og:title"           content="大舌頭(日文:?????，英文:Lickitung)" />
+    <meta property="og:description"     content="大舌頭PTCG官網連結" />
+    <meta property="og:image"           content="https://asia.pokemon-card.com/tw/card-img/tw00010231.png" />
+</head>
+<body>
+    <!-- 註解是在文字前面加control和/ -->
+    <h1>標題 PTCG卡牌</h1>
+    <p>段落 歡迎來到PTCG卡牌搜尋網站</p>
+    <!-- 以下是換行 -->
+    <br>
+    <br>
+    <!-- 以下是空格 -->
+    <p>我不是空格&nbsp;&nbsp;&nbsp;&nbsp;跳脫字元</p>
+
+    <br>
+    <!-- ul無序列表；ol有序列表 -->
+    <ul>
+        <li>小火龍</li>
+        <li>火恐龍</li>
+        <li>噴火龍</li>
+    </ul>
+
+    <br>
+    <ol>
+        <li>小火龍</li>
+        <li>火恐龍</li>
+        <li>噴火龍</li>
+    </ol>
+
+    <br>
+    <!-- table表格 -->
+    <table>
+        <tr>
+            <th>編號1</th>
+            <th>編號2</th>
+            <th>編號3</th>
+        </tr>
+        <tr>
+            <td>小火龍</td>
+            <td>火恐龍</td>
+            <td>噴火龍</td>
+        </tr>
+    </table>
+
+    <br>
+    <!-- 超連結 -->
+    <!-- 加入target="_blank"，開連結時不會直接跳轉而是開新分頁 -->
+    <a href="https://asia.pokemon-card.com/tw/card-search/" target="_blank">PTCG卡牌列表</a>
+    <a href="./page2.html">Page 2</a>
+
+    <br>
+    <!-- 使用超連結寄信mailto -->
+    <a href="mailto:lin20040423@gmail.com">寄信到我的gmail</a>
+
+    <br>
+    <!-- 錨點跳轉到同一頁面某個區塊 -->
+    <ul>
+        <li><a href="#小火龍">跳轉到小火龍</a></li>
+        <li><a href="#火恐龍">跳轉到火恐龍</a></li>
+        <li><a href="#噴火龍">跳轉到噴火龍</a></li>
+    </ul>
+
+    <br>
+    <!-- 創建區塊 -->
+    <h2 id="小火龍">小火龍的區域</h2>
+    <p>關於小火龍</p>
+    <br>
+    <h2 id="火恐龍">火恐龍的區域</h2>
+    <p>關於火恐龍</p>
+    <br>
+    <h2 id="噴火龍">噴火龍的區域</h2>
+    <p>關於噴火龍</p>
+
+    <!-- 圖片 -->
+    <br>
+    <!-- 圖片來源，限制圖片高度，width限制圖片寬度，如果圖片沒有被讀取到的話會出現描述性的提示 -->
+    <img src="./芭瓢蟲.jpg" height="100" alt="這是芭瓢蟲的卡牌">
+    <img src="./芭瓢蟲.png" height="100" alt="這是芭瓢蟲的卡牌">
+    <!-- 用連結包住圖片，讓圖片變成超連結 -->
+    <a href="https://asia.pokemon-card.com/tw/card-search/detail/10896/" target="_blank">
+        <img src="./芭瓢蟲.jpg" height="100" alt="這是芭瓢蟲的卡牌">
+    </a>
+    <!-- 存取資料夾裡的圖片 -->
+    <img src="./ptcgpicture/image_0_0.jpg" height="100" alt="這是芭瓢蟲的卡牌">
+
+    <br>
+    <!-- 表單標籤文字輸入框 -->
+    <!-- action表單資料要傳到伺服器的哪個地方 -->
+    <form action="xxx.com/index.php" method="post">
+        <label for="pokename">寶可夢名稱</label>
+        <input type="text" id="pokename">
+        <input type="submit" value="搜尋">
+    </form>
+
+    <!-- 日期 -->
+    <br>
+    <form action="">
+        <label for="">日期</label>
+        <input type="date" name="date" id="date">
+    </form>
+
+    <!-- 輸入數字 -->
+    <br>
+    <label for="">數量</label>
+    <input type="number" name="" id="" min="1">
+
+    <!-- 文字區塊(評論時) -->
+    <form action="">
+        <label for="comment">評論</label>
+        <textarea name="comment" id="comment" cols="30" rows="10"></textarea>
+        <input type="submit" value="提交">
+    </form>
+
+    <!-- 表單的單選和多選 -->
+    <!-- 單選 -->
+    <br>
+    <form action="">
+        <label for="">
+            <input type="radio" name="question1" value="小火龍">
+            小火龍
+        </label>
+        <label for=""></label>
+            <input type="radio" name="question1" value="噴火龍">
+            噴火龍
+        </label>
+    </form>
+
+    <!-- 多選 Checkbox -->
+    <br>
+    <form action="">
+        <input type="checkbox" name="寶可夢" id="">
+        <label for="">小火龍</label>
+        <input type="checkbox" name="寶可夢" id="">
+        <label for="">火恐龍</label>
+        <input type="checkbox" name="寶可夢" id="">
+        <label for="">噴火龍</label>
+        <input type="submit" value="搜尋">
+    </form>
+
+    <!-- 下拉式選單 -->
+    <br>
+    <h1>請選擇寶可夢</h1>
+    <form action="">
+        <select name="" id="">
+            <option value="小火龍">小火龍</option>
+            <option value="火恐龍">火恐龍</option>
+            <option value="噴火龍">噴火龍</option>
+        </select>
+        <input type="submit" value="搜尋">
+    </form>
+
+    <!-- 跳脫字元:自己GOOGLE查Escape characters html -->
+
+    <!-- 粗體元素，斜體元素，強調元素，e/m元素 -->
+    <br>
+    <p><b>這是粗體</b></p>
+    <p><i>這是斜體</i></p>
+    <p><strong>這是強調</strong></p>
+    <p><em>這是e/m</em></p>
+
+    <!-- iframe引入網頁(內嵌) -->
+    <br>
+    <iframe src="iframe1.html" frameborder="0">
+        你看的到這個嗎
+    </iframe>
+    <iframe src="iframe2.html" frameborder="0">
+        你看的到這個嗎
+    </iframe>
+    <!-- 嵌入YT -->
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/StQC7wauL0c?si=2-plFM37vOEOVinH" 
+    title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media;
+    gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen></iframe>
+
+    <!-- 在網頁播放音樂 -->
+    <br>
+    <audio controls>
+        <source src="./MP3的檔名" type="audio/mpeg">
+        你的瀏覽器不支援音樂
+    </audio>
+
+    <!-- div是塊級容器元素 -->
+    <br>
+    <div style="background-color: blueviolet;">
+        第一區塊
+    </div>
+    <div style="background-color: aqua;">
+        第二區塊
+    </div>
+
+    <!-- span行內元素 -->
+    <br>
+    <span style="background-color: chartreuse;">
+        第一區塊
+    </span>
+    <span style="background-color: blue;">
+        第二區塊
+    </span>
+    <span style="background-color: cadetblue;">
+        第三區塊
+    </span>
+    <span style="background-color: coral;">
+        第四區塊
+    </span>
+
+    <!-- 按鈕button -->
+    <br>
+    <button style="color:blue; background-color: aliceblue;">
+        我不是按鈕
+    </button>
+    <br>
+    <button style="border-radius:5px; color:blue; background-color: aliceblue;">
+        我不是圓角按鈕
+    </button>
+    <!-- 建立一個連結到PTCG官網的按鈕 -->
+    <br>
+    <a href="https://asia.pokemon-card.com/tw/card-search/" target="_blank">
+        <button style="border-radius:5px; color:blue; background-color: aliceblue;">
+            PTCG官方卡牌搜尋
+        </button>
+    </a>
+
+    <!-- header頁首 -->
+    <header style="border: 1px soild;">
+        <p>
+            <a href="#">首頁</a>
+            <a href="#">關於PTCG</a>
+            <a href="#">卡排列表</a>
+        </p>
+    </header>
+    <!-- 內文 -->
+    <main>
+        <h1>內容</h1>
+    </main>
+    <!-- footer頁尾 -->
+    <footer>
+        <p>作者:庄汁蝶</p>
+        <p>&copy; 版權所有，翻印必究</p>
+    </footer>
+
+    <br>
+    <h2>PTCG卡牌</h2>
+    <p>版權所有，翻印必究</p>
+</body>
+</html>

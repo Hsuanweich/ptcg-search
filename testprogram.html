@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  		<title>PTCG</title>
+<!-- 
+
+Highway Template
+
+https://templatemo.com/tm-520-highway
+
+-->
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/fontAwesome.css">
+        <link rel="stylesheet" href="css/light-box.css">
+        <link rel="stylesheet" href="css/templatemo-style.css">
+
+        <link href="https://fonts.googleapis.com/css?family=Kanit:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+
+        <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+        <script>
+            async function runPythonScript() {
+                try {
+                    // 立即顯示提示
+                    alert("程式執行中...");
+                    const response = await fetch('/run-script', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+        
+                    const data = await response.json();
+                    alert(data.message);
+                }
+                catch(error){
+                    alert("執行時發生錯誤！");
+                    console.error(error);
+                }
+            }
+        </script> 
+        <script>
+            async function runPythonScript2() {
+                try {
+                    // 立即顯示提示
+                    alert("程式執行中...");
+                    const response = await fetch('/run-script-2', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    alert(data.message); // 顯示回傳訊息
+                }
+                catch (error) {
+                    alert("執行時發生錯誤！");
+                    console.error(error);
+                }
+            }
+        </script>
+        <script>
+            async function runPythonScript3() {
+                try {
+                    // 立即顯示提示
+                    alert("程式執行中...");
+                    const response = await fetch('/run-script-3', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    alert(data.message); // 顯示後端回傳的訊息
+                }
+                catch (error) {
+                    alert("執行時發生錯誤！");
+                    console.error("Error running script:", error);
+                }
+                finally {
+                    // 無論成功或失敗都關閉 modal
+                    closeVideoModal();
+                }
+            }
+            function openVideoAndRunPython() {
+                const modal = document.getElementById("videoModal");
+                const video = document.getElementById("modalVideo");
+
+                // 顯示 Modal 並播放影片
+                modal.style.display = "block";
+                video.play();
+
+                // 執行後端程式
+                runPythonScript3();
+            }
+
+            function closeVideoModal() {
+                const modal = document.getElementById("videoModal");
+                const video = document.getElementById("modalVideo");
+
+                // 關閉 Modal 並停止影片
+                video.pause();
+                video.currentTime = 0;
+                modal.style.display = "none";
+            }
+        </script>
+
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
+
+            .fullscreen-bg {
+                position: relative;
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .fullscreen-bg img {
+                width: 100vw;
+                height: 100vh;
+                object-fit: fill; /* 圖片會鋪滿區塊，即使變形 */
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .content {
+                position: relative;
+                z-index: 1;
+                color: white;
+                text-align: center;
+                padding-top: 20vh;
+            }
+        </style>
+        <style>
+            body {
+              font-family: "DFKai-SB", "標楷體", DFKai, serif;
+            }
+        </style>
+        <style>
+            .logo a {
+                color: white; /* 原本的顏色，可依你的背景調整 */
+                text-decoration: none;
+                transition: color 0.3s ease; /* 增加滑順過渡效果 */
+            }
+
+            .logo a:hover {
+                color: #ffcc00; /* 滑鼠移上去時的顏色，可自由更換 */
+            }
+            .logo a em {
+                color: white;
+                transition: color 0.3s ease;
+            }
+
+            .logo a:hover em {
+                color: #00ffff; /* 滑鼠移上去時斜體文字變色 */
+            }
+        </style>
+    </head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <a href="/">PTCG<em>圖片分析檢索首頁</em></a>
+        </div>
+        <div class="menu-icon">
+            <span></span>
+        </div>
+        <div style="position: absolute; top: 75px; right: 35px;">
+            <a href="/logout" class="btn btn-danger">登出</a>
+        </div>
+    </nav>
+
+    <div id="video-container">
+        <div class="video-overlay"></div>
+        <div class="video-content">
+            <div class="inner">
+              <h1>歡迎來到 <em>PTCG 圖片分析檢索測試介面</em></h1>
+              <br>
+              <p>PTCG 圖片分析檢索測試</p>
+              <br>
+              <p>右上角開始進行程式測試 </p>
+              <br>
+              <p>1.將卡牌分成五大類 (程式碼在後端執行須開啟後端)</p>
+              <br>
+              <p>2.卡牌分類開始進行程式測試 (程式碼在後端執行須開啟後端)</p>
+              <br>
+              <p>3.從訓練家網站獲取search keyword </p>
+              <br>
+              <p>4.獲取所需的search keyword後，使用這些search keyword來查找在露天上的價格 </p>
+
+            </div>
+        </div>
+        <!--
+        <video autoplay="" loop="" muted>
+        	<source src="cardgaming.mp4" type="video/mp4" />
+        </video>
+        -->
+        <div class="fullscreen-bg">
+            <img src="img/htmlbackground.jpg" alt="">
+        </div>
+    </div>
+    
+    <!--copyright-->
+    <footer>
+        <div class="container-fluid">
+            <div class="col-md-12">
+                <p>Copyright &copy; 2024 Lickitung
+    
+    | Designed by Kevin Lin</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Modal button -->
+    <div class="popup-icon">
+        <button onclick="runPythonScript()" id="runPythonBtn" class="modal-btn" type="button">
+            <img src="img/訓練家網站.png" alt="">
+        </button>
+    </div>
+
+    <div class="popopupu-icon">
+        <button onclick="runPythonScript2()" id="runPythonBtn" class="modal-btn" type="button">
+            <img src="img/露天市集.png" alt="">
+        </button>
+    </div>
+    
+
+    <div class="card-icon">
+        <button onclick="openVideoAndRunPython()" id="runPythonBtn" class="modal-btn" type="button">
+            <img src="img/卡牌分類1.jpg" alt="">
+        </button>
+    </div>
+
+
+    <!-- Modal 視窗（用來播放影片） -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeVideoModal()">&times;</span>
+            <video id="modalVideo" autoplay muted playsinline controls loop controlsList="nodownload nofullscreen noremoteplayback">
+                <source src="loading.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>  
+    
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+        
+        .modal-content {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .modal-content video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 30px;
+            color: white;
+            z-index: 10;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- Modal 視窗（用來顯示圖片） -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeImageModal()">&times;</span>
+            <img id="chart" src="" alt="圖片尚未載入" style="max-width: 60vw; max-height: 60vh; display: block; margin: 0 auto; object-fit: contain;">
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            padding-top: 60px; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+    
+        .modal-content {
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+            position: relative;
+            text-align: center; /* 確保圖片置中 */
+        }
+    
+        .close {
+            color: white;
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 36px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .close:hover {
+            background: red;
+            color: white;
+        }
+
+        .close:focus {
+            color: black;
+        }
+    </style>    
+
+    <div class="menunu-icon">
+        <a href="/">
+            <button>
+                <img src="img/close.png" alt="">
+            </button>
+        </a>
+    </div>
+
+
+    <section class="overlay-menu">
+      <div class="container">
+        <div class="row">
+          <div class="main-menu">
+              <ul>
+                  <li>
+                    <a href="/upload-page">上傳檔案與資料夾</a>
+                  </li>
+                  <!--
+                  <li>
+                    <a href="http://127.0.0.1:5000">開始進行程式測試(後端)</a>
+                  </li>
+                  <li>
+                    <a href="http://127.0.0.1:5000/upload-page">上傳檔案與資料夾</a>
+                  </li>
+                  <li>
+                    <a href="/">登出</a>
+                  </li>
+                  <li>
+                      <a href="login.html">登入介面</a>
+                  </li>
+                  <li>
+                      <a href="index.html">Home - Full-width</a>
+                  </li>
+                  <li>
+                      <a href="masonry.html">Home - Masonry</a>
+                  </li>
+                  <li>
+                      <a href="grid.html">Home - Small-width</a>
+                  </li>
+                  <li>
+                      <a href="about.html">About Us</a>
+                  </li>
+                  <li>
+                      <a href="blog.html">Blog Entries</a>
+                  </li>
+                  <li>
+                      <a href="single-post.html">Single Post</a>
+                  </li>
+                  -->
+              </ul>
+              <p>我們將會為您帶來至尊級的服務</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+
+    <script src="js/vendor/bootstrap.min.js"></script>
+    
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+
+    
+</body>
+</html>

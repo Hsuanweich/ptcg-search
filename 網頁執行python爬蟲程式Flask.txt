@@ -1,0 +1,63 @@
+網頁執行python爬蟲程式
+先CMD，然後
+
+建立虛擬環境（可選）：在命令提示字元中輸入：
+python -m venv venv
+
+啟動虛擬環境：
+.\venv\Scripts\activate
+
+成功啟動後，命令提示字元/終端機前會顯示 (venv)，表示虛擬環境已經啟動。
+
+在虛擬環境啟動的狀態下，輸入以下命令來安裝 Flask：
+pip install Flask
+
+
+在專案資料夾內建立一個 Python 檔案，例如 app.py。
+可以使用任何文字編輯器（如 VS Code、Notepad++ 等）來編輯此檔案。
+若在命令提示字元/終端機中，使用以下命令來建立檔案：
+type NUL > app.py  # Windows
+
+打開 app.py，輸入以下基本程式碼：
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Hello, Flask!"
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+在命令提示字元/終端機中，確保目前位置在 app.py 所在的資料夾
+可以使用以下命令來確認目前資料夾位置：
+cd
+
+如果不在專案資料夾，使用 cd 切換目錄，例如：
+cd path/to/your/project
+
+
+輸入以下命令啟動伺服器：
+python app.py
+
+伺服器啟動後，你會在命令提示字元/終端機看到類似以下的訊息：
+* Running on http://127.0.0.1:5000
+
+打開瀏覽器，訪問 http://127.0.0.1:5000，你應該會看到 "Hello, Flask!" 的訊息。
+
+在瀏覽器訪問 http://127.0.0.1:5000/，你應該會看到頁面顯示 "Hello, Flask!"。
+若要修改返回的訊息，可以更新 app.py 中的 return 語句，例如：
+return "Welcome to My Flask App!"
+
+若需要在不同 IP 或 Port 啟動 Flask 伺服器，可以修改 app.py 中的 app.run，例如：
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)
+
+接著在命令提示字元/終端機中輸入：
+python app.py
+
+這樣 Flask 伺服器會在 0.0.0.0:8080 上運行，可以從同一網路中的其他設備訪問。
+
+完成開發後，可以輸入以下指令關閉虛擬環境：
+deactivate
