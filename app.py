@@ -13,6 +13,7 @@ from classify import classifymain
 from werkzeug.utils import secure_filename
 from flask import redirect
 import pandas as pd
+import shutil
 
 app = Flask(__name__, template_folder=os.getcwd(), static_folder=os.getcwd())
 app.secret_key = 'clove123'  # 用於加密 session（請換成安全的值）
@@ -32,7 +33,12 @@ def serve_static(folder, filename):
 
 @app.route('/display')
 def display():
-    return render_template('display.html')
+    src_file = session.get('uploaded_image_path')
+    dst_folder = 'img/'
+    shutil.copy(src_file, dst_folder)
+    filename = os.path.basename(src_file)
+    img_path = os.path.join(dst_folder, filename)
+    return render_template('display.html', img_path=img_path)
 
 @app.route('/testprogram')
 def testprogram():
@@ -124,6 +130,7 @@ def run_script4():
             except Exception as e:
                 print('Invalid date:', label)
     os.remove(img_path)  # 刪除上傳的檔案
+    os.remove("img/" + os.path.basename(img_path))
     print("done!")
     
     return jsonify(data)
