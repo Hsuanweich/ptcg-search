@@ -7,6 +7,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <style>
       body { background: url('/img/htmlbackground.jpg') no-repeat center center fixed; background-size: cover; font-family: "Noto Sans TC", "微軟正黑體", Arial, sans-serif; }
+      #loading-spinner {
+        position: fixed;
+        z-index: 9999;
+        left: 0; top: 0;
+        width: 100vw; height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(30, 30, 30, 0.32); /* 半透明遮罩，可選 */
+      }
       .card-list { display: flex; flex-wrap: wrap; gap: 28px; margin: 40px 0; justify-content: center; }
       .card-btn {
         position: relative;
@@ -85,6 +95,20 @@
 <body>
     <div id="main-page">
         <button class="back-btn" onclick="goBack()">返回上一頁</button>
+        <div id="loading-spinner">
+          <svg width="60" height="60" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="20" fill="none" stroke="#f0f0f0" stroke-width="5" 
+              stroke-linecap="round" stroke-dasharray="90,150" stroke-dashoffset="0">
+              <animateTransform 
+                attributeName="transform"
+                type="rotate"
+                from="0 25 25"
+                to="360 25 25"
+                dur="1s"
+                repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
         <div class="card-list" id="card-list"></div>
     </div>
     <div id="detail-page" style="display:none;">
@@ -128,6 +152,8 @@ function renderCardList() {
 
     listDiv.appendChild(btn);
   });
+
+  document.getElementById('loading-spinner').style.display = 'none';
 }
 
 // ===== 詳細頁（分頁式）=====
@@ -402,6 +428,11 @@ function resetLineChart() {
   if (chart.resetZoom) chart.resetZoom();
   chart.update();
 }
+</script>
+<script>
+  if (performance.getEntriesByType('navigation')[0].type === 'reload') {
+    window.location.href = '/';
+  }
 </script>
 </body>
 </html>
