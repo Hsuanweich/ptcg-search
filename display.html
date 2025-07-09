@@ -4,32 +4,58 @@
     <meta charset="utf-8">
     <title>卡片瀏覽器</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@^2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <style>
-      body { background: #f6f6f6; font-family: "Noto Sans TC", "微軟正黑體", Arial, sans-serif; }
+      body { background: url('/img/htmlbackground.jpg') no-repeat center center fixed; background-size: cover; font-family: "Noto Sans TC", "微軟正黑體", Arial, sans-serif; }
       .card-list { display: flex; flex-wrap: wrap; gap: 28px; margin: 40px 0; justify-content: center; }
-      .card-btn { border: 1px solid #ddd; border-radius: 10px; padding: 18px 10px 12px 10px; text-align: center; background: #fff; width: 190px; cursor: pointer; transition: box-shadow 0.2s; }
-      .card-btn:hover { box-shadow: 0 0 8px #bbb; background: #f2f6fa; }
+      .card-btn {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 18px 10px 12px 10px;
+        text-align: center;
+        background: #fff;
+        color: #000;
+        width: 190px;
+        cursor: pointer;
+        transition: box-shadow 0.2s;
+      }
+      .card-number {
+        position: absolute;
+        left: 10px; top: 10px;
+        font-size: 1.1em;
+        font-weight: bold;
+        background: #333;
+        color: #FFD600;   /* 明亮黃 */
+        border-radius: 50%;
+        width: 26px; height: 26px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 1px 5px #0003;
+      }
+      .card-btn:hover { box-shadow: 0 0 8px #bbb; background: #b9b9b9; color: #000}
       .card-btn img { width: 120px; height: auto; display: block; margin: 0 auto 12px auto; border-radius: 6px; }
       .back-btn { margin: 20px 0 10px 20px; padding: 8px 20px; border-radius: 7px; border: 1px solid #aaa; cursor: pointer; background: #fff; font-size: 15px; }
       .info-block { max-width: 540px; margin: 32px auto 10px auto; }
-      .price { font-size: 22px; color: #c00; font-weight: bold; margin-bottom: 14px; }
-      .section-title { margin: 16px 0 8px 0; font-weight: bold; letter-spacing: 2px; font-size: 18px; color: #444; }
+      .price { font-size: 22px; color: #FF3B30; font-weight: bold; margin-bottom: 14px;}
+      .section-title { margin: 16px 0 8px 0; font-weight: bold; letter-spacing: 2px; font-size: 18px; color: #fff; }
       canvas { margin: 14px 0; max-width: 520px; }
       .tab-btn {
         padding: 6px 18px;
         border: 1px solid #bbb;
         border-radius: 8px 8px 0 0;
-        background: #fff;
+        background: #f0f0f0;
+        color: #333;
         font-weight: bold;
         cursor: pointer;
         outline: none;
         transition: background 0.2s;
         font-size: 16px;
       }
-      .tab-btn.active, .tab-btn:active { background: #e6ecfa; }
-      .tab-btn:hover { background: #f7f7f7; }
+      .tab-btn.active, .tab-btn:active { background: #555; color: #fff;}
+      .tab-btn:hover { background: #ccc; color: #222;}
       .tab-content {
         background: #fff;
         border: 1px solid #bbb;
@@ -88,6 +114,11 @@ function renderCardList() {
     btn.className = 'card-btn';
     btn.onclick = () => showDetail(idx);
 
+    const number = document.createElement('span');
+    number.className = 'card-number';
+    number.textContent = idx + 1;
+    btn.appendChild(number);
+
     const img = document.createElement('img');
     img.src = card.card_image;
     const name = document.createElement('div');
@@ -139,10 +170,10 @@ function renderDetail(idx) {
     <div id="tab-content-2" class="tab-content" style="display:none;">
       <div class="date-controls">
         選擇日期區間：
-        <input type="date" id="start-date" style="margin-right:10px;">
-        <input type="date" id="end-date">
+        <input type="date" id="start-date" style="margin-right:6px;">
+        <span style="font-size:18px; color:#000; vertical-align:middle;">~</span>
+        <input type="date" id="end-date" style="margin-left:6px;">
         <button class="reset-btn" onclick="resetLineChart()">重置</button>
-        <span style="font-size:13px;color:#777;margin-left:10px;">可用滑鼠縮放/拖曳圖表</span>
       </div>
       <canvas id="line1"></canvas>
     </div>
@@ -157,14 +188,70 @@ function renderDetail(idx) {
     new Chart(document.getElementById('bar1').getContext('2d'), {
       type: 'bar',
       data: card.product_bar,
-      options: { responsive: true }
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              color: '#000'    // 圖例顏色
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "價格區間", color: '#000' },
+            ticks: { color: '#000' },
+            barPercentage: 1.0,
+            categoryPercentage: 1.0
+          },
+          y: {
+            title: { display: true, text: "數量", color: '#000' },
+            ticks: {
+              color: '#000',
+              stepSize: 1,              // 強制每個刻度相差1
+              callback: function(val) { // 保險只顯示整數
+                return Number.isInteger(val) ? val : '';
+              }
+            }
+          }
+        }
+      }
     })
   );
   charts.push(
     new Chart(document.getElementById('bar2').getContext('2d'), {
       type: 'bar',
       data: card.product_history_bar,
-      options: { responsive: true }
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              color: '#000'    // 圖例顏色
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "價格區間", color: '#000' },
+            ticks: { color: '#000' },
+            barPercentage: 1.0,
+            categoryPercentage: 1.0
+          },
+          y: {
+            title: { display: true, text: "數量", color: '#000' },
+            ticks: {
+              color: '#000',
+              stepSize: 1,              // 強制每個刻度相差1
+              callback: function(val) { // 保險只顯示整數
+                return Number.isInteger(val) ? val : '';
+              }
+            }
+          }
+        }
+      }
     })
   );
 
@@ -176,6 +263,42 @@ function renderDetail(idx) {
   });
   card.product_week_line.labels = labels;
 
+  // 設定最低價線為紅色
+  card.product_week_line.datasets.forEach(ds => {
+    if (ds.label === "最低價") {
+      ds.order = 0;
+      ds.borderColor = "red";
+      ds.backgroundColor = "rgba(255,0,0,0.08)";
+      ds.pointBorderColor = "red";
+      ds.pointBackgroundColor = "red";
+    }
+    else if (ds.label === "中位數") {
+      ds.order = 1;
+      ds.borderColor = "#FF6600";
+      ds.backgroundColor = "rgba(255,102,0,0.08)";
+      ds.pointBorderColor = "#FF6600";
+      ds.pointBackgroundColor = "#FF6600";
+    } else if (ds.label === "第一四分位數") {
+      ds.order = 4;
+      ds.borderColor = "#FFD600"; // 黃色 (亮黃: #FFD600, 也可用 #FFEB3B)
+      ds.backgroundColor = "rgba(255, 214, 0, 0.12)";
+      ds.pointBorderColor = "#FFD600";
+      ds.pointBackgroundColor = "#FFD600";
+    } else if (ds.label === "第三四分位數") {
+      ds.order = 3;
+      ds.borderColor = "#43A047"; // 綠色 (深綠: #43A047, 亮綠: #4CAF50)
+      ds.backgroundColor = "rgba(67, 160, 71, 0.12)";
+      ds.pointBorderColor = "#43A047";
+      ds.pointBackgroundColor = "#43A047";
+    } else if (ds.label === "最高價") {
+      ds.order = 2;
+      ds.borderColor = "#1976D2"; // 藍色 (深藍: #1976D2, 亮藍: #2196F3)
+      ds.backgroundColor = "rgba(25, 118, 210, 0.10)";
+      ds.pointBorderColor = "#1976D2";
+      ds.pointBackgroundColor = "#1976D2";
+    }
+  });
+
   // ===== 初始化折線圖與備份原始資料 =====
   originalLineData = JSON.parse(JSON.stringify(card.product_week_line));
   charts.push(
@@ -185,18 +308,17 @@ function renderDetail(idx) {
       options: {
         responsive: true,
         plugins: {
-          legend: { display: true },
-          zoom: {
-            pan: {
-              enabled: true,
-              mode: 'x'
-            },
-            zoom: {
-              wheel: { enabled: true },
-              pinch: { enabled: true },
-              mode: 'x'
+          legend: {
+            display: true,
+            labels: {
+              color: '#000',
+              // 自訂 legend 排序
+              sort: function(a, b) {
+                const legendOrder = ["最高價", "第三四分位數", "中位數", "第一四分位數", "最低價"];
+                return legendOrder.indexOf(a.text) - legendOrder.indexOf(b.text);
+              }
             }
-          }
+          },
         },
         scales: {
           x: {
@@ -204,9 +326,13 @@ function renderDetail(idx) {
             time: {
               unit: 'day'
             },
-            title: { display: true, text: "日期" }
+            title: { display: true, text: "日期", color: '#000' },
+            ticks: { color: '#000' } 
           },
-          y: { title: { display: true, text: "價格" } }
+          y: { 
+            title: { display: true, text: "價格", color: '#000' },
+            ticks: { color: '#000' } 
+          }
         }
       }
     })

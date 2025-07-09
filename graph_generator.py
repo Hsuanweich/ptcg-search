@@ -369,16 +369,28 @@ def gengraph_main(qq):
         card_image_data = get_image(search_key, from_where)
         product_bar = {
             "labels": product_labels,
-            "datasets": [
-                {"label": "價格分布", "data": product_data}
-            ]
+            "datasets": [{
+                    "label": "價格分布",
+                    "data": product_data,
+                    "backgroundColor": "rgba(25, 118, 210, 0.8)",
+                    "borderColor": "#0D47A1",
+                    "hoverBackgroundColor": "rgba(25, 118, 210, 1)",
+                    "hoverBorderColor": "#0D47A1",
+                    "borderWidth": 2
+            }]
         }
 
         product_history_bar = {
             "labels": product_history_labels,
-            "datasets": [
-                {"label": "價格分布", "data": product_history_data}
-            ]
+            "datasets": [{
+                "label": "價格分布",
+                "data": product_history_data,
+                "backgroundColor": "rgba(255, 152, 0, 0.8)",
+                "borderColor": "#E65100",
+                "hoverBackgroundColor": "rgba(255, 152, 0, 1)",
+                "hoverBorderColor": "#E65100",
+                "borderWidth": 2
+            }]
         }
 
         product_week_line = {
