@@ -87,7 +87,25 @@
         cursor: pointer;
       }
       @media (max-width: 800px) {
-        .card-list { flex-direction: column; align-items: center; }
+        .card-list {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          flex-wrap: nowrap !important;
+          gap: 16px !important;
+          margin: 20px 0 !important;
+          width: 100% !important;
+        }
+        .card-btn {
+          width: 92vw !important;
+          max-width: 340px !important;
+          min-width: unset !important;
+          margin: 0 !important;
+          box-sizing: border-box !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+        }
         .info-block { max-width: 99vw; }
       }
     </style>
