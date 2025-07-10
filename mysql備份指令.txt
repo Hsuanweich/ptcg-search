@@ -1,0 +1,7 @@
+遠端/PTCGHTML
+mysqldump -h 127.0.0.1 -u root -pPokemonTCG PTCG > PTCG_backup.sql
+
+本機GitBash /c/ptcg_project
+scp ptcg@PTCG:/home/ptcg/PTCGHTML/PTCG_backup.sql C:/ptcg_project/
+
+"/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql" -u root -p --default-character-set=utf8mb4 PTCG < /c/ptcg_project/PTCG_backup.sql
