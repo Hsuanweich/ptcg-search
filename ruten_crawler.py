@@ -7,7 +7,6 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.service import Service
-# from webdriver_manager.chrome import ChromeDriverManager
 import time
 import mysql.connector
 import datetime
@@ -41,13 +40,14 @@ def ruten_crawler_main():
     # 從資料庫取得search_key和from_where
     connection.ping(reconnect=True)
     with connection.cursor() as cursor:
-        cursor.execute("SELECT `search_key`, `from_where` FROM `card`;")
+        cursor.execute("SELECT `search_key`, `from_where`, `full_name` FROM `card`;")
         all_result = cursor.fetchall()
 
     count = 0
     for one_result in all_result:
         search_key = one_result[0]
         from_where = one_result[1]
+        full_name = one_result[2]
         """if (search_key, from_where) in done_result:
             continue  # 已經爬過了"""
         if count == 100:
@@ -55,7 +55,7 @@ def ruten_crawler_main():
             driver = init_browser()
             count = 0
         count += 1
-        products_price, no_result = crawler(search_key, from_where, driver, connection)
+        products_price, no_result = crawler(search_key, full_name, driver, connection)
         has_result = not no_result
 
         # 刪除舊資料
@@ -266,7 +266,7 @@ def init_browser():
 
 
 # 爬蟲
-def crawler(search_key, from_where, driver, connection):
+def crawler(search_key, keyword, driver, connection):
     while True:
         try:
             # 等待網頁載入搜尋欄位
@@ -278,19 +278,6 @@ def crawler(search_key, from_where, driver, connection):
             # 等一下後重新整理
             time.sleep(5)
             driver.refresh()
-
-    connection.ping(reconnect=True)
-    with connection.cursor() as cursor:
-        cursor.execute(f"SELECT `label` FROM `booster_pack` WHERE `from_where` = '{from_where}';")
-        result = cursor.fetchone()
-    if result:  # 有對應的label
-        label = result[0]
-    else:  # 沒有對應的label
-        label = ""
-
-    num, name = search_key.split(' ', 1)
-    num = num.split('/')[0]
-    keyword = label + ' ' + num + ' ' + name
 
     # 使用露天搜尋功能
     search.send_keys(Keys.CONTROL, 'a')  # 將輸入框全選，用以覆蓋前次搜尋文字
