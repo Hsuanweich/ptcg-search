@@ -133,18 +133,16 @@ def get_cardfullname(search_key, from_where, pool):
     connection = pool.get_connection()
     try:
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT `label` FROM `booster_pack` WHERE `from_where` = '{from_where}';")
+            cursor.execute(f"SELECT `full_name` FROM `card` WHERE `search_key` = '{search_key}' AND `from_where` = '{from_where}';")
             result = cursor.fetchone()
-        if result:  # 有對應的label
-            label = result[0]
-        else:  # 沒有對應的label
-            label = ""
+        if result:
+            full_name = result[0]
+        else:
+            full_name = ""
     finally:
-        connection.close()  # 關閉與資料庫的連線
-    num, name = search_key.split(' ', 1)
-    num = num.split('/')[0]
-    keyword = label + ' ' + num + ' ' + name
-    return keyword
+        connection.close()
+
+    return full_name
 
 def get_price(search_key, from_where, table_name, pool):
     # 取得product的columns名稱
